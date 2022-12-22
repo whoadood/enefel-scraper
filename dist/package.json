@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "build": "rm -rf dist && tsc",
-    "postbuild": "npm run copy-views && npm run copy-json && npm run copy-lock && npm run copy-prisma && cd dist && npx prisma generate && npm i --omit=dev",
+    "postbuild": "npm run copy-views && npm run copy-json && npm run copy-lock && npm run copy-prisma && cd dist && npm i --omit=dev",
     "copy-views": "cp -r ./src/views/ ./dist",
     "copy-json": "cp ./package.json ./dist",
     "copy-lock": "cp ./package-lock.json ./dist",

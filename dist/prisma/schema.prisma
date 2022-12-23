@@ -1,0 +1,177 @@
+// *********** dev DB connection *************
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "postgres"
+//   url      = env("DATABASE_URL")
+// }
+
+// *********** CockroachDB connection *************
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Widget {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+}
+
+model User {
+  id     String @id @unique @default(uuid())
+  email  String @unique
+  secret String @unique
+  usage  Int
+  access String
+}
+
+model Team {
+  id         String         @id @unique @default(uuid())
+  name       String         @unique
+  icon       String
+  city       String
+  conference String
+  division   String
+  urlSlug    String
+  details    TeamDetails?
+  schedule   ScheduleGame[]
+  roster     Player[]
+  stats      TeamStat?
+}
+
+model TeamDetails {
+  id      String @id @unique @default(uuid())
+  rank    String
+  wins    String
+  losses  String
+  ties    String
+  coach   String
+  stadium String
+  team    Team   @relation(fields: [team_id], references: [id])
+  team_id String @unique
+}
+
+model TeamStat {
+  id               String               @id @unique @default(uuid())
+  first_downs      TeamFirstDown?
+  down_conversions TeamDownConversion[]
+  offense          TeamOffense?
+  sacks            String
+  field_goals      TeamFieldGoal?
+  touch_downs      TeamTouchDown?
+  turnover_ratio   String
+  team             Team                 @relation(fields: [team_id], references: [id])
+  team_id          String               @unique
+}
+
+model TeamTouchDown {
+  id           String   @id @unique @default(uuid())
+  total        String
+  rushing      String
+  passing      String
+  returns      String
+  defensive    String
+  team_stat    TeamStat @relation(fields: [team_stat_id], references: [id])
+  team_stat_id String   @unique
+}
+
+model TeamFieldGoal {
+  id           String   @id @unique @default(uuid())
+  successful   String
+  attempts     String
+  team_stat    TeamStat @relation(fields: [team_stat_id], references: [id])
+  team_stat_id String   @unique
+}
+
+// fix this!!!
+model TeamOffense {
+  id                    String   @id @unique @default(uuid())
+  general_total_yards   String
+  general_plays         String
+  general_average_yards String
+  rushing_total_yards   String
+  rushing_plays         String
+  rushing_average_yards String
+  passing_completions   String
+  passing_attempts      String
+  passing_interceptions String
+  passing_average_yards String
+  team_stat             TeamStat @relation(fields: [team_stat_id], references: [id])
+  team_stat_id          String   @unique
+}
+
+model TeamFirstDown {
+  id                String   @id @unique @default(uuid())
+  total_first_downs String
+  rushing           String
+  passing           String
+  penalty           String
+  team_stat         TeamStat @relation(fields: [team_stat_id], references: [id])
+  team_stat_id      String   @unique
+}
+
+model TeamDownConversion {
+  id           String   @id @unique @default(uuid())
+  down         String
+  successful   String
+  attempts     String
+  team_stat    TeamStat @relation(fields: [team_stat_id], references: [id])
+  team_stat_id String
+}
+
+model ScheduleGame {
+  id         String @id @unique @default(uuid())
+  gameUrl    String
+  date       String
+  opponent   String // Team relation
+  homeOrAway String
+  outcome    String
+  score      String
+  team       Team   @relation(fields: [team_id], references: [id])
+  team_id    String
+}
+
+model Player {
+  id         String       @id @unique @default(uuid())
+  slugUrl    String?
+  headshot   String?
+  name       String
+  number     String?
+  position   String?
+  height     String
+  weight     String
+  experience String?
+  college    String?
+  status     String?
+  stats      PlayerStat[]
+  team       Team         @relation(fields: [team_id], references: [id])
+  team_id    String
+}
+
+model PlayerStat {
+  id          String              @id @unique @default(uuid())
+  week        String
+  opponent    String
+  result      String
+  performance PlayerPerformance[]
+  player      Player              @relation(fields: [player_id], references: [id])
+  player_id   String
+}
+
+model PlayerPerformance {
+  id             String      @id @unique @default(uuid())
+  title          String
+  stat           String
+  Player_stat    PlayerStat? @relation(fields: [player_stat_id], references: [id])
+  player_stat_id String
+}

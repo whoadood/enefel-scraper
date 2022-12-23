@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
-import hbs from "hbs";
 import prisma from "../utils/db.js";
 
-import { createHash } from "../utils/helpers.js";
+import { createHash, generateEmailTemplate } from "../utils/helpers.js";
 import { transporter } from "../utils/nm-transporter.js";
-
-import { emailTemplateSrc } from "../utils/helpers.js";
 
 // const randomString = crypto.randomBytes(32).toString("hex");
 
@@ -44,6 +41,8 @@ const registerUser = async (req: Request, res: Response) => {
      dispatch email to provided with random string to attach to requests for comparison
       */
 
+      const emailMessage = generateEmailTemplate(randomString);
+
       await prisma.user.create({
         data: {
           email: email as string,
@@ -53,16 +52,11 @@ const registerUser = async (req: Request, res: Response) => {
         },
       });
 
-      const template = hbs.handlebars.compile(
-          emailTemplateSrc.toString("utf-8")
-        ),
-        htmlToSend = template({ message: randomString });
-
       const mailOptions = {
         from: "no-reply@enefel.com",
         to: email,
         subject: "Your EnEfEl API registration key",
-        html: htmlToSend,
+        html: emailMessage,
       };
 
       transporter.sendMail(mailOptions, (err, res) => {

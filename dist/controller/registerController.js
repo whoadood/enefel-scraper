@@ -8,11 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import crypto from "crypto";
-import hbs from "hbs";
 import prisma from "../utils/db.js";
-import { createHash } from "../utils/helpers.js";
+import { createHash, generateEmailTemplate } from "../utils/helpers.js";
 import { transporter } from "../utils/nm-transporter.js";
-import { emailTemplateSrc } from "../utils/helpers.js";
 // const randomString = crypto.randomBytes(32).toString("hex");
 // const hashString = crypto
 //   .createHash("sha256")
@@ -47,6 +45,7 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
            
            dispatch email to provided with random string to attach to requests for comparison
             */
+            const emailMessage = generateEmailTemplate(randomString);
             yield prisma.user.create({
                 data: {
                     email: email,
@@ -55,12 +54,11 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                     access: "user",
                 },
             });
-            const template = hbs.handlebars.compile(emailTemplateSrc.toString("utf-8")), htmlToSend = template({ message: randomString });
             const mailOptions = {
                 from: "no-reply@enefel.com",
                 to: email,
                 subject: "Your EnEfEl API registration key",
-                html: htmlToSend,
+                html: emailMessage,
             };
             transporter.sendMail(mailOptions, (err, res) => {
                 if (err) {

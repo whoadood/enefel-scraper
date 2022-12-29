@@ -2,7 +2,7 @@ import express from "express";
 import registerRouter from "./router/registerRouter.js";
 import teamsRouter from "./router/teamRouter.js";
 import playerRouter from "./router/playerRotuer.js";
-import demoRouter from "./router/demoRouter";
+import demoRouter from "./router/demoRouter.js";
 import { checkToken } from "./middleware/auth.js";
 import { updateUsage } from "./middleware/updateUsage.js";
 

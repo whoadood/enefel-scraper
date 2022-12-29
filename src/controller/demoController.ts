@@ -19,6 +19,7 @@ const demoTeam = async (req: Request, res: Response) => {
       name: "Eagles",
     },
     include: {
+      stats: true,
       roster: true,
       details: true,
     },

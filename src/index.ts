@@ -2,6 +2,7 @@ import express from "express";
 import registerRouter from "./router/registerRouter.js";
 import teamsRouter from "./router/teamRouter.js";
 import playerRouter from "./router/playerRotuer.js";
+import demoRouter from "./router/demoRouter";
 import { checkToken } from "./middleware/auth.js";
 import { updateUsage } from "./middleware/updateUsage.js";
 
@@ -17,6 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 // app.set("views", __dirname + "/templates");
 
 app.use("/register", registerRouter);
+
+app.use("/demo", demoRouter);
 
 app.use("/teams", checkToken, updateUsage, teamsRouter);
 

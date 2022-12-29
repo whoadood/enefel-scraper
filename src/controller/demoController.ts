@@ -7,7 +7,11 @@ const demoPlayer = async (req: Request, res: Response) => {
       name: "Tom Brady",
     },
     include: {
-      stats: true,
+      stats: {
+        include: {
+          performance: true,
+        },
+      },
     },
   });
   res.json({ player });
@@ -18,10 +22,29 @@ const demoTeam = async (req: Request, res: Response) => {
     where: {
       name: "Eagles",
     },
-    include: {
-      stats: true,
-      roster: true,
+    select: {
+      id: true,
+      name: true,
+      icon: true,
+      city: true,
+      conference: true,
+      division: true,
+      urlSlug: true,
       details: true,
+      stats: {
+        include: {
+          first_downs: true,
+          down_conversions: true,
+          offense: true,
+          field_goals: true,
+          touch_downs: true,
+        },
+      },
+      roster: {
+        where: {
+          position: "QB",
+        },
+      },
     },
   });
   res.json({ team });

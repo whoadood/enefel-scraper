@@ -67,7 +67,6 @@ const registerUser = async (req: Request, res: Response) => {
         }
       });
       res.json({
-        randomString,
         message: `Email sent to ${email}`,
       });
     }
